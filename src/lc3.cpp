@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <signal.h>
+#include <iostream>
+#include <cstdint>
+#include <csignal>
 // windows only
 #include <Windows.h>
 #include <conio.h>  // _kbhit
@@ -20,7 +20,8 @@ enum {
     R_PC,
     // Condition flag
     R_COND,
-    R_COUNT // Acts like the length property for the registers
+    // Acts like the length property for the registers
+    R_COUNT
 };
 // Condition flags
 enum {
@@ -75,4 +76,96 @@ void restore_input_buffering() {
 
 uint16_t check_key() {
     return WaitForSingleObject(hStdin, 1000) == WAIT_OBJECT_0 && _kbhit();
+}
+void handle_interrupt(int signal) {
+    restore_input_buffering();
+    std::cout << '\n';
+    exit(-2);
+}
+
+int main(int argc, const char* argv[]) {
+    // Load arguments
+    if (argc < 2) {
+        // show usage string
+        std::cout << "lc3 [image-file1] ...\n";
+        exit(2);
+    }
+
+    for (int i = 1; i < argc; i++) {
+        if (!read_image(argv[i])) {
+            std::cout << "failed to load image: " << argv[i] << '\n';
+            exit(1);
+        }
+    }
+
+    // Setup
+    signal(SIGINT, handle_interrupt);
+    disable_input_buffering();
+
+
+    // Initialise condition flag to the Z flag, since exactly 1 condition flag should be set at any given time
+    reg[R_COND] = FL_ZRO;
+
+    // Set the PC register to the starting position
+    // Start at 0x3000 to leave space for trap routine code
+    enum { PC_START = 0x3000 };
+    reg[R_PC] = PC_START;
+
+    int isRunning = true;
+    while (isRunning) {
+        // FETCH
+        uint16_t instr = mem_read(reg[R_PC]++);
+        uint16_t op = instr >> 12;  // Right shift by 12 to obtain instruction, first 4 bits represent opcode
+        
+        switch (op) {
+            case OP_ADD:
+                // TODO: add
+                break;
+            case OP_AND:
+                // TODO: and
+                break;
+            case OP_NOT:
+                // TODO: not
+                break;
+            case OP_BR:
+                // TODO: br
+                break;
+            case OP_JMP:
+                // TODO: jmp
+                break;
+            case OP_JSR:
+                // TODO: jsr
+                break;
+            case OP_LD:
+                // TODO: ld
+                break;
+            case OP_LDI:
+                // TODO: ldi
+                break;
+            case OP_LDR:
+                // TODO: ldr
+                break;
+            case OP_LEA:
+                // TODO: lea
+                break;
+            case OP_ST:
+                // TODO: st
+                break;
+            case OP_STI:
+                // TODO: sti
+                break;
+            case OP_STR:
+                // TODO: str
+                break;
+            case OP_TRAP:
+                // TODO: trap
+                break;
+            case OP_RES:
+            case OP_RTI:
+            default:
+                // TODO: handle bad opcode
+                break;
+        }
+    }
+    restore_input_buffering();
 }
