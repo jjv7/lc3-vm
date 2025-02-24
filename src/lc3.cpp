@@ -187,8 +187,11 @@ int main(int argc, const char* argv[]) {
                     reg[R_PC] += pc_offset;
                 }
                 break;
-            case OP_JMP:
-                // TODO: jmp
+            case OP_JMP:    // Also handles RET 
+                // BaseR (base register)
+                uint16_t r1 = (instr >> 6) & 0x7;
+                
+                reg[R_PC] = reg[r1];
                 break;
             case OP_JSR:
                 // TODO: jsr
