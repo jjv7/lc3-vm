@@ -190,11 +190,23 @@ int main(int argc, const char* argv[]) {
             case OP_JMP:    // Also handles RET 
                 // BaseR (base register)
                 uint16_t r1 = (instr >> 6) & 0x7;
-                
+
                 reg[R_PC] = reg[r1];
                 break;
             case OP_JSR:
-                // TODO: jsr
+                // Check if using BaseR or PCoffset11    
+                uint16_t long_flag = (instr >> 11) & 0x1;
+                reg[R_R7] = reg[R_PC];
+
+                if (long_flag) {
+                    // PCoffset11
+                    uint16_t long_pc_offset = sign_extend(instr & 0x3FF, 11);
+                    reg[R_PC] += long_pc_offset;    // JSR
+                } else {
+                    // BaseR (base register)
+                    uint16_t r1 = (instr >> 6) & 0x7;
+                    reg[R_PC] = reg[r1];            // JSRR
+                }
                 break;
             case OP_LD:
                 // TODO: ld
