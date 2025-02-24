@@ -49,6 +49,16 @@ enum {
     OP_TRAP    // execute trap
 };
 
+// TRAP Codes
+enum {
+    TRAP_GETC = 0x20,  // get character from keyboard, not echoed onto the terminal
+    TRAP_OUT = 0x21,   // output a character
+    TRAP_PUTS = 0x22,  // output a word string
+    TRAP_IN = 0x23,    // get character from keyboard, echoed onto the terminal
+    TRAP_PUTSP = 0x24, // output a byte string
+    TRAP_HALT = 0x25   // halt the program
+};
+
 // Memory storage
 #define MEMORY_MAX (1 << 16)  // Left bitshift 16 times, 2^16
 uint16_t memory[MEMORY_MAX];  // 65536 memory locations
@@ -273,7 +283,28 @@ int main(int argc, const char* argv[]) {
                 mem_write(reg[r1] + offset, reg[r0]);
                 break;
             case OP_TRAP:
-                // TODO: trap
+                reg[R_R7] = reg[R_PC];
+
+                switch (instr & 0xFF) { // trapvect8
+                    case TRAP_GETC:
+                        // TODO: getc
+                        break;
+                    case TRAP_OUT:
+                        // TODO: out
+                        break;
+                    case TRAP_PUTS:
+                        // TODO: puts
+                        break;
+                    case TRAP_IN:
+                        // TODO: in
+                        break;
+                    case TRAP_PUTSP:
+                        // TODO: putsp
+                        break;
+                    case TRAP_HALT:
+                        // TODO: halt
+                        break;
+                }
                 break;
             case OP_RES:    // Unused
                 abort();
