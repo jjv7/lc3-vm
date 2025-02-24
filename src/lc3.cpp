@@ -135,7 +135,7 @@ int main(int argc, const char* argv[]) {
             case OP_ADD:
                 // DR (destination register)
                 uint16_t r0 = (instr >> 9) & 0x7;
-                // SR1 (first operand, first num to add)
+                // SR1 (source register 1)
                 uint16_t r1 = (instr >> 6) & 0x7;
                 // Check if in register or immediate mode
                 uint16_t imm_flag = (instr >> 5) & 0x1;
@@ -153,7 +153,7 @@ int main(int argc, const char* argv[]) {
             case OP_AND:
                 // DR (destination register)
                 uint16_t r0 = (instr >> 9) & 0x7;
-                // SR1 (first operand)
+                // SR1 (source register 1)
                 uint16_t r1 = (instr >> 6) & 0x7;
                 // Check if in register or immediate mode
                 uint16_t imm_flag = (instr >> 5) & 0x1;
@@ -169,7 +169,13 @@ int main(int argc, const char* argv[]) {
                 update_flags(r0);
                 break;
             case OP_NOT:
-                // TODO: not
+                // DR (destination register)
+                uint16_t r0 = (instr >> 9) & 0x7;
+                // SR (source register)
+                uint16_t r1 = (instr >> 6) & 0x7;
+                
+                reg[r0] = ~reg[r1];
+                update_flags(r0);
                 break;
             case OP_BR:
                 // TODO: br
