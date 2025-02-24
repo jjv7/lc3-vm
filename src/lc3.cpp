@@ -82,6 +82,21 @@ void handle_interrupt(int signal) {
     std::cout << '\n';
     exit(-2);
 }
+uint16_t sign_extend(uint16_t x, int bit_count) {
+    if((x >> (bit_count - 1)) & 1) {    // Check if sign bit is set
+        x |= (0xFFFF << bit_count);     // Create 16-bit mask for x (using Two's Complement)
+    }
+    return x;
+}
+void update_flags(uint16_t r) {
+    if (reg[r] == 0) {
+        reg[R_COND] = FL_ZRO;
+    } else if (reg[r] >> 15) {  // Check if sign bit is set (left-most bit). If set, it is negative
+        reg[R_COND] = FL_NEG;
+    } else {
+        reg[R_COND] = FL_POS;
+    }
+}
 
 int main(int argc, const char* argv[]) {
     // Load arguments
@@ -102,7 +117,6 @@ int main(int argc, const char* argv[]) {
     signal(SIGINT, handle_interrupt);
     disable_input_buffering();
 
-
     // Initialise condition flag to the Z flag, since exactly 1 condition flag should be set at any given time
     reg[R_COND] = FL_ZRO;
 
@@ -119,7 +133,22 @@ int main(int argc, const char* argv[]) {
         
         switch (op) {
             case OP_ADD:
-                // TODO: add
+                // DR (destination register)
+                uint16_t r0 = (instr >> 9) & 0x7;
+                // SR1 (first operand, first num to add)
+                uint16_t r1 = (instr >> 6) & 0x7;
+                // Check if in register or immediate mode
+                uint16_t imm_flag = (instr >> 5) & 0x1;
+
+                if (imm_flag) {
+                    uint16_t imm5 = sign_extend(instr & 0x1F, 5);
+                    reg[r0] = reg[r1] + imm5;
+                } else {
+                    uint16_t r2 = instr & 0x7;
+                    reg[r0] = reg[r1] + reg[r2];
+                }
+
+                update_flags(r0);
                 break;
             case OP_AND:
                 // TODO: and
@@ -160,8 +189,8 @@ int main(int argc, const char* argv[]) {
             case OP_TRAP:
                 // TODO: trap
                 break;
-            case OP_RES:
-            case OP_RTI:
+            case OP_RES:    // Unused
+            case OP_RTI:    // Unused
             default:
                 // TODO: handle bad opcode
                 break;
