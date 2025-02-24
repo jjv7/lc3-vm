@@ -209,7 +209,13 @@ int main(int argc, const char* argv[]) {
                 }
                 break;
             case OP_LD:
-                // TODO: ld
+                // DR (Destination register)
+                uint16_t r0 = (instr >> 9) & 0x7;
+                // PCoffset9
+                uint16_t pc_offset = sign_extend(instr & 0x1FF, 9);
+
+                reg[r0] = mem_read(reg[R_PC] + pc_offset);
+                update_flags(r0);
                 break;
             case OP_LDI:
                 // DR (destination register)
