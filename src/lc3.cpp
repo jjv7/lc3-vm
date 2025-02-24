@@ -196,9 +196,13 @@ int main(int argc, const char* argv[]) {
                 // TODO: trap
                 break;
             case OP_RES:    // Unused
+                abort();
+                break;
             case OP_RTI:    // Unused
+                abort();
+                break;
             default:
-                // TODO: handle bad opcode
+                abort();
                 break;
         }
     }
