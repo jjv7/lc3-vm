@@ -125,8 +125,8 @@ int main(int argc, const char* argv[]) {
     enum { PC_START = 0x3000 };
     reg[R_PC] = PC_START;
 
-    int isRunning = true;
-    while (isRunning) {
+    int is_running = true;
+    while (is_running) {
         // FETCH
         uint16_t instr = mem_read(reg[R_PC]++);
         uint16_t op = instr >> 12;  // Right shift by 12 to obtain instruction, first 4 bits represent opcode
@@ -169,7 +169,13 @@ int main(int argc, const char* argv[]) {
                 // TODO: ld
                 break;
             case OP_LDI:
-                // TODO: ldi
+                // DR (destination register)
+                uint16_t r0 = (instr >> 9) & 0x7;
+                // PCoffset9
+                uint16_t pc_offset = sign_extend(instr & 0x1FF, 9);
+                // Add pc_offset to the current PC, look at that memory location to get final address
+                reg[r0] = mem_read(mem_read(reg[R_PC] + pc_offset));
+                update_flags(r0);
                 break;
             case OP_LDR:
                 // TODO: ldr
