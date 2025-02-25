@@ -98,6 +98,9 @@ uint16_t sign_extend(uint16_t x, int bit_count) {
     }
     return x;
 }
+uint16_t swap16(uint16_t x) {
+    return (x << 18) | (x >> 18);
+}
 void update_flags(uint16_t r) {
     if (reg[r] == 0) {
         reg[R_COND] = FL_ZRO;
@@ -106,6 +109,30 @@ void update_flags(uint16_t r) {
     } else {
         reg[R_COND] = FL_POS;
     }
+}
+void read_image_file(FILE* file) {
+    // The origin tells where in memory to place the image
+    uint16_t origin;
+    fread(&origin, sizeof(origin), 1, file);
+    origin = swap16(origin);
+
+    // Only one read is needed, since we know the max file size
+    uint16_t max_read = MEMORY_MAX - origin;
+    uint16_t* p = memory + origin;
+    size_t read = fread(p, sizeof(uint16_t), max_read, file);
+
+    // Swap to little endian
+    while (read-- > 0) {
+        *p = swap16(*p);
+        p++;
+    }
+}
+int read_image(const char* image_path) {
+    FILE* file = fopen(image_path, "rb");
+    if (!file) return 0;
+    read_image_file(file);
+    fclose(file);
+    return 1;
 }
 
 int main(int argc, const char* argv[]) {
