@@ -287,13 +287,15 @@ int main(int argc, const char* argv[]) {
 
                 switch (instr & 0xFF) { // trapvect8
                     case TRAP_GETC:
-                        // TODO: getc
+                        // Read a single ASCII char
+                        reg[R_R0] = static_cast<uint16_t>(std::cin.get());
+                        update_flags(R_R0);
                         break;
                     case TRAP_OUT:
                         // TODO: out
                         break;
                     case TRAP_PUTS: {
-                            // one char per word
+                            // One char per word
                             uint16_t* c = memory + reg[R_R0];
                             while (*c) {
                                 std::cout << static_cast<char>(*c);
