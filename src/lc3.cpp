@@ -292,7 +292,8 @@ int main(int argc, const char* argv[]) {
                         update_flags(R_R0);
                         break;
                     case TRAP_OUT:
-                        // TODO: out
+                        std::cout.put(static_cast<char>(reg[R_R0]));
+                        std::cout.flush();
                         break;
                     case TRAP_PUTS: {
                             // One char per word
