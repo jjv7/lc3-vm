@@ -329,7 +329,8 @@ int main(int argc, const char* argv[]) {
                         }
                         break;
                     case TRAP_HALT:
-                        // TODO: halt
+                        std::cout << "HALT" << std::flush;
+                        is_running = false;
                         break;
                 }
                 break;
