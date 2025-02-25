@@ -299,14 +299,20 @@ int main(int argc, const char* argv[]) {
                             // One char per word
                             uint16_t* c = memory + reg[R_R0];
                             while (*c) {
-                                std::cout << static_cast<char>(*c);
+                                std::cout.put(static_cast<char>(*c));
                                 c++;
                             }
                             std::cout.flush();
                         }
                         break;
-                    case TRAP_IN:
-                        // TODO: in
+                    case TRAP_IN: {
+                            std::cout << "Enter a character: ";
+                            char c = std::cin.get();
+                            std::cout.put(c);
+                            std::cout.flush();
+                            reg[R_R0] = static_cast<uint16_t>(c);
+                            update_flags(R_R0);
+                        }
                         break;
                     case TRAP_PUTSP:
                         // TODO: putsp
