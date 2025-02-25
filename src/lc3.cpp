@@ -314,8 +314,19 @@ int main(int argc, const char* argv[]) {
                             update_flags(R_R0);
                         }
                         break;
-                    case TRAP_PUTSP:
-                        // TODO: putsp
+                    case TRAP_PUTSP: {
+                            // One char per byte (two bytes per word)
+                            // Need to swap back to big endian format
+                            uint16_t* c = memory + reg[R_R0];
+                            while (*c) {
+                                char char1 = static_cast<char>((*c) & 0xFF);
+                                std::cout.put(char1);
+                                char char2 = static_cast<char>((*c) >> 8);
+                                if (char2) std::cout.put(char2);
+                                c++;
+                            }
+                            std::cout.flush();
+                        }
                         break;
                     case TRAP_HALT:
                         // TODO: halt
