@@ -292,8 +292,15 @@ int main(int argc, const char* argv[]) {
                     case TRAP_OUT:
                         // TODO: out
                         break;
-                    case TRAP_PUTS:
-                        // TODO: puts
+                    case TRAP_PUTS: {
+                            // one char per word
+                            uint16_t* c = memory + reg[R_R0];
+                            while (*c) {
+                                std::cout << static_cast<char>(*c);
+                                c++;
+                            }
+                            std::cout.flush();
+                        }
                         break;
                     case TRAP_IN:
                         // TODO: in
